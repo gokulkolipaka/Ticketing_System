@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graviti Pharmaceuticals - Ticketing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-placeholder {
+            width: 170px;
+            height: 66px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo-placeholder:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .logo-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .company-info h1 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .company-info p {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .user-info {
+            text-align: right;
+            color: #2d3748;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .priority-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .priority-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .priority-btn.high {
+            border-color: #f56565;
+            color: #f56565;
+        }
+
+        .priority-btn.medium {
+            border-color: #ed8936;
+            color: #ed8936;
+        }
+
+        .priority-btn.low {
+            border-color: #48bb78;
+            color: #48bb78;
+        }
+
+        .priority-btn.active {
+            color: white;
+        }
+
+        .priority-btn.high.active {
+            background: #f56565;
+        }
+
+        .priority-btn.medium.active {
+            background: #ed8936;
+        }
+
+        .priority-btn.low.active {
+            background: #48bb78;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .kanban-board {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .kanban-columns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .kanban-column {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 400px;
+        }
+
+        .column-header {
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .new { background: #4299e1; }
+        .assigned { background: #ed8936; }
+        .progress { background: #38b2ac; }
+        .resolved { background: #48bb78; }
+
+        .ticket-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .ticket-id {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .ticket-meta {
+            font-size: 12px;
+            color: #718096;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ticket-priority {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .priority-high { background: #f56565; }
+        .priority-medium { background: #ed8936; }
+        .priority-low { background: #48bb78; }
+
+        .admin-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn {
+            background: #48bb78;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: #38a169;
+        }
+
+        .admin-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .admin-btn:hover {
+            background: #5a67d8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #718096;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .compliance-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(72, 187, 120, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-form {
+            max-width: 600px;
+            margin: 100px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .admin-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
+
+        .team-members-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .team-member-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .remove-btn {
+            background: #f56565;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background: #e53e3e;
+        }
+
+        .user-management-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .super-admin-only {
+            display: none;
+        }
+
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info-item {
+            flex: 1;
+        }
+
+        .user-info-item h4 {
+            margin: 0;
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        .user-info-item p {
+            margin: 2px 0 0 0;
+            color: #718096;
+            font-size: 12px;
+        }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .super-admin-badge { background: #9f7aea; }
+        .admin-badge { background: #4299e1; }
+
+        .password-strength {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .strength-weak { color: #f56565; }
+        .strength-medium { color: #ed8936; }
+        .strength-strong { color: #48bb78; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .kanban-columns {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kanban-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- User Ticket Form (Default Page) -->
+    <div id="userForm" class="user-form">
+        <div class="login-header">
+            <h2>Graviti Pharmaceuticals</h2>
+            <p>Submit a Support Ticket</p>
+        </div>
+        <div class="form-group">
+            <label for="userDepartment">Department:</label>
+            <select id="userDepartment" required>
+                <option value="">Select Department</option>
+                <option value="IT">IT Department</option>
+                <option value="Admin">Admin Department</option>
+                <option value="Civil">Civil Department</option>
+                <option value="QA">Quality Assurance</option>
+                <option value="Production">Production</option>
+                <option value="Research">Research & Development</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="userName">Full Name:</label>
+            <input type="text" id="userName" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+            <label for="employeeCode">Employee Code:</label>
+            <input type="text" id="employeeCode" placeholder="Enter your employee code" required>
+        </div>
+        <div class="form-group">
+            <label for="issueDescription">Issue Description:</label>
+            <textarea id="issueDescription" placeholder="Briefly describe your issue..." required></textarea>
+        </div>
+        <button class="submit-btn" onclick="submitUserTicket()">Submit Ticket</button>
+        
+        <div class="admin-link">
+            <a href="#" onclick="showAdminLogin()">Admin Login</a>
+        </div>
+    </div>
+
+    <!-- Admin Login Form -->
+    <div id="adminLoginForm" class="login-form hidden">
+        <div class="login-header">
+            <h2>Admin Login</h2>
+            <p>Administrative Access Required</p>
+        </div>
+        <div class="form-group">
+            <label for="adminUsername">Username:</label>
+            <input type="text" id="adminUsername" placeholder="Enter admin username">
+        </div>
+        <div class="form-group">
+            <label for="adminPassword">Password:</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
+        </div>
+        <button class="submit-btn" onclick="adminLogin()">Login as Admin</button>
+        <div class="admin-link">
+            <a href="#" onclick="showUserForm()">Back to User Form</a>
+        </div>
+    </div>
+
+    <!-- Main Application (Admin View) -->
+    <div id="mainApp" class="hidden">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo-placeholder" onclick="document.getElementById('logoUpload').click()">
+                        <img id="logoImage" src="" alt="" style="display: none;">
+                        <span id="logoText">Click to Upload Logo<br>170x66 px</span>
+                    </div>
+                    <input type="file" id="logoUpload" accept="image/*" style="display: none;" onchange="uploadLogo(event)">
+                    <div class="company-info">
+                        <h1>Graviti Pharmaceuticals</h1>
+                        <p>Ticketing Management System</p>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div>Welcome, <span id="currentUser">Admin</span></div>
+                    <div><span id="currentUserRole">Administrator</span></div>
+                    <button class="control-btn admin-btn" onclick="logout()" style="margin-top: 10px;">Logout</button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTickets">0</div>
+                    <div class="stat-label">Total Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="newTickets">0</div>
+                    <div class="stat-label">New Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="inProgressTickets">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="resolvedTickets">0</div>
+                    <div class="stat-label">Resolved</div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Team Management -->
+                <div class="ticket-form">
+                    <h3 style="margin-bottom: 20px; color: #2d3748;">Team Management</h3>
+                    <div class="form-group">
+                        <label for="teamDepartment">Department:</label>
+                        <select id="teamDepartment">
+                            <option value="">Select Department</option>
+                            <option value="IT">IT Department</option>
+                            <option value="Admin">Admin Department</option>
+                            <option value="Civil">Civil Department</option>
+                            <option value="QA">Quality Assurance</option>
+                            <option value="Production">Production</option>
+                            <option value="Research">Research & Development</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberName">Team Member Name:</label>
+                        <input type="text" id="memberName" placeholder="Enter team member name">
+                    </div>
+                    <div class="form-group">
+                        <label for="memberEmail">Email Address:</label>
+                        <input type="email" id="memberEmail" placeholder="Enter email address">
+                    </div>
+                    <button class="submit-btn" onclick="addTeamMember()">Add Team Member</button>
+                    
+                    <div id="teamMembersList" class="team-members-list"></div>
+                </div>
+
+                <!-- Kanban Board -->
+                <div class="kanban-board">
+                    <h3 style="margin-bottom: 20px; color: #2d3748;">Ticket Board</h3>
+                    <div class="kanban-columns">
+                        <div class="kanban-column">
+                            <div class="column-header new">New</div>
+                            <div id="newColumn" class="ticket-list"></div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="column-header assigned">Assigned</div>
+                            <div id="assignedColumn" class="ticket-list"></div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="column-header progress">In Progress</div>
+                            <div id="progressColumn" class="ticket-list"></div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="column-header resolved">Resolved</div>
+                            <div id="resolvedColumn" class="ticket-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section (Super Admin Only) -->
+            <div id="userManagementSection" class="user-management-section super-admin-only">
+                <h3 style="margin-bottom: 20px; color: #2d3748;">User Management System (Super Admin Only)</h3>
+                
+                <!-- Change Password Section -->
+                <div style="margin-bottom: 30px;">
+                    <h4 style="color: #2d3748; margin-bottom: 15px;">Change Your Password</h4>
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password:</label>
+                        <input type="password" id="currentPassword" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password" oninput="checkPasswordStrength()">
+                        <div id="passwordStrength" class="password-strength"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password:</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                    </div>
+                    <button class="submit-btn" onclick="changePassword()">Change Password</button>
+                </div>
+
+                <!-- Add Department Admin Section -->
+                <div style="margin-bottom: 30px;">
+                    <h4 style="color: #2d3748; margin-bottom: 15px;">Add Department Admin</h4>
+                    <div class="form-group">
+                        <label for="adminDepartment">Department:</label>
+                        <select id="adminDepartment">
+                            <option value="">Select Department</option>
+                            <option value="Admin">Admin Department</option>
+                            <option value="Civil">Civil Department</option>
+                            <option value="QA">Quality Assurance</option>
+                            <option value="Production">Production</option>
+                            <option value="Research">Research & Development</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminUsername">Admin Username:</label>
+                        <input type="text" id="adminUsername" placeholder="Enter admin username">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminName">Admin Full Name:</label>
+                        <input type="text" id="adminName" placeholder="Enter admin full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminEmail">Admin Email:</label>
+                        <input type="email" id="adminEmail" placeholder="Enter admin email">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPass">Admin Password:</label>
+                        <input type="password" id="adminPass" placeholder="Enter admin password" oninput="checkAdminPasswordStrength()">
+                        <div id="adminPasswordStrength" class="password-strength"></div>
+                    </div>
+                    <button class="submit-btn" onclick="addDepartmentAdmin()">Add Department Admin</button>
+                </div>
+
+                <!-- Current Admins List -->
+                <div>
+                    <h4 style="color: #2d3748; margin-bottom: 15px;">Current System Administrators</h4>
+                    <div id="adminsList" class="user-list"></div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="admin-panel">
+                <h3 style="margin-bottom: 20px; color: #2d3748;">Admin Controls</h3>
+                <div class="controls">
+                    <button class="control-btn export-btn" onclick="exportToPDF()">Export to PDF</button>
+                    <button class="control-btn export-btn" onclick="exportToCSV()">Export to CSV</button>
+                    <button class="control-btn admin-btn" onclick="showAuditLog()">Audit Log</button>
+                    <button id="userManagementBtn" class="control-btn admin-btn super-admin-only" onclick="toggleUserManagement()">User Management</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Modal -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Ticket</h3>
+                <span class="close" onclick="closeModal('assignModal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="assignTo">Assign to:</label>
+                <select id="assignTo">
+                    <option value="">Select Team Member</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="severityLevel">Set Severity:</label>
+                <select id="severityLevel">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="assignmentNotes">Assignment Notes:</label>
+                <textarea id="assignmentNotes" placeholder="Any specific instructions..."></textarea>
+            </div>
+            <button class="submit-btn" onclick="assignTicket()">Assign Ticket</button>
+        </div>
+    </div>
+
+    <!-- Compliance Badge -->
+    <div class="compliance-badge">
+        FDA 21CFR Part 11 Compliant
+    </div>
+
+    <script>
+        // Global variables
+        let tickets = [];
+        let teamMembers = {
+            'IT': [],
+            'Admin': [],
+            'Civil': [],
+            'QA': [],
+            'Production': [],
+            'Research': []
+        };
+        let currentTicketId = null;
+        let ticketCounter = 0;
+        let currentUser = null;
+
+        // System administrators with enhanced structure
+        let systemAdmins = {
+            'superadmin': {
+                username: 'superadmin',
+                password: 'admin123',
+                name: 'Super Administrator',
+                email: 'superadmin@graviti.com',
+                department: 'IT',
+                role: 'Super Admin',
+                canManageUsers: true,
+                createdDate: new Date().toISOString()
+            }
+        };
+
+        // Initialize system
+        function initializeSystem() {
+            // Load stored admins
+            const storedAdmins = localStorage.getItem('gravitiSystemAdmins');
+            if (storedAdmins) {
+                systemAdmins = JSON.parse(storedAdmins);
+            } else {
+                saveSystemAdmins();
+            }
+        }
+
+        // Save system admins
+        function saveSystemAdmins() {
+            localStorage.setItem('gravitiSystemAdmins', JSON.stringify(systemAdmins));
+        }
+
+        // Initialize with some dummy team members
+        function initializeTeamMembers() {
+            teamMembers = {
+                'IT': [
+                    { name: 'John Smith', email: 'john.smith@graviti.com' },
+                    { name: 'Sarah Johnson', email: 'sarah.johnson@graviti.com' }
+                ],
+                'Admin': [
+                    { name: 'Mike Wilson', email: 'mike.wilson@graviti.com' },
+                    { name: 'Lisa Brown', email: 'lisa.brown@graviti.com' }
+                ],
+                'Civil': [
+                    { name: 'David Lee', email: 'david.lee@graviti.com' },
+                    { name: 'Emma Davis', email: 'emma.davis@graviti.com' }
+                ],
+                'QA': [
+                    { name: 'Robert Chen', email: 'robert.chen@graviti.com' }
+                ],
+                'Production': [
+                    { name: 'Maria Garcia', email: 'maria.garcia@graviti.com' }
+                ],
+                'Research': [
+                    { name: 'James Miller', email: 'james.miller@graviti.com' }
+                ]
+            };
+            updateTeamMembersList();
+        }
+
+        // Show admin login
+        function showAdminLogin() {
+            document.getElementById('userForm').classList.add('hidden');
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+        }
+
+        // Show user form
+        function showUserForm() {
+            document.getElementById('adminLoginForm').classList.add('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('userForm').classList.remove('hidden');
+        }
+
+        // Submit user ticket
+        function submitUserTicket() {
+            const department = document.getElementById('userDepartment').value;
+            const name = document.getElementById('userName').value;
+            const employeeCode = document.getElementById('employeeCode').value;
+            const description = document.getElementById('issueDescription').value;
+
+            if (!department || !name || !employeeCode || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const ticketId = 'GRP-' + String(++ticketCounter).padStart(3, '0');
+            
+            const newTicket = {
+                id: ticketId,
+                title: description.substring(0, 50) + (description.length > 50 ? '...' : ''),
+                raisedBy: name,
+                employeeCode: employeeCode,
+                department: department,
+                description: description,
+                priority: 'Medium',
+                status: 'New',
+                assignedTo: '',
+                assignedEmail: '',
+                severity: 'Medium',
+                createdDate: new Date().toISOString(),
+                lastModified: new Date().toISOString()
+            };
+
+            let storedTickets = JSON.parse(localStorage.getItem('gravitiTickets') || '[]');
+            storedTickets.push(newTicket);
+            localStorage.setItem('gravitiTickets', JSON.stringify(storedTickets));
+
+            document.getElementById('userDepartment').value = '';
+            document.getElementById('userName').value = '';
+            document.getElementById('employeeCode').value = '';
+            document.getElementById('issueDescription').value = '';
+
+            alert(`Ticket submitted successfully!\nTicket ID: ${ticketId}\n\nYour ticket has been received and will be reviewed by our team shortly.`);
+        }
+
+        // Admin login with enhanced authentication
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            // Check against system admins
+            const admin = Object.values(systemAdmins).find(admin => 
+                admin.username === username && admin.password === password);
+
+            if (admin) {
+                currentUser = admin;
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Update user info in header
+                document.getElementById('currentUser').textContent = admin.name;
+                document.getElementById('currentUserRole').textContent = admin.role;
+                
+                // Show/hide super admin features
+                if (admin.canManageUsers) {
+                    document.querySelectorAll('.super-admin-only').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                    updateAdminsList();
+                } else {
+                    document.querySelectorAll('.super-admin-only').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+                
+                loadTicketsFromStorage();
+                initializeTeamMembers();
+                updateKanbanBoard();
+                updateStats();
+                
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+            } else {
+                alert('Invalid admin credentials. Please try again.\n\nDemo credentials:\nUsername: superadmin\nPassword: admin123');
+            }
+        }
+
+        // Load tickets from localStorage
+        function loadTicketsFromStorage() {
+            const storedTickets = JSON.parse(localStorage.getItem('gravitiTickets') || '[]');
+            tickets = storedTickets;
+            if (tickets.length > 0) {
+                ticketCounter = Math.max(...tickets.map(t => parseInt(t.id.split('-')[1])));
+            }
+        }
+
+        // Save tickets to localStorage
+        function saveTicketsToStorage() {
+            localStorage.setItem('gravitiTickets', JSON.stringify(tickets));
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            showUserForm();
+        }
+
+        // Logo upload function
+        function uploadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logoImage = document.getElementById('logoImage');
+                    const logoText = document.getElementById('logoText');
+                    logoImage.src = e.target.result;
+                    logoImage.style.display = 'block';
+                    logoText.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Add team member
+        function addTeamMember() {
+            const department = document.getElementById('teamDepartment').value;
+            const name = document.getElementById('memberName').value;
+            const email = document.getElementById('memberEmail').value;
+
+            if (!department || !name || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            const exists = teamMembers[department].some(member => 
+                member.name === name || member.email === email
+            );
+
+            if (exists) {
+                alert('Team member already exists in this department');
+                return;
+            }
+
+            teamMembers[department].push({ name, email });
+            
+            document.getElementById('teamDepartment').value = '';
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberEmail').value = '';
+
+            updateTeamMembersList();
+            updateAssignmentDropdown();
+            
+            alert(`Team member ${name} added successfully to ${department} department!`);
+        }
+
+        // Remove team member
+        function removeTeamMember(department, index) {
+            if (confirm('Are you sure you want to remove this team member?')) {
+                teamMembers[department].splice(index, 1);
+                updateTeamMembersList();
+                updateAssignmentDropdown();
+            }
+        }
+
+        // Update team members list display
+        function updateTeamMembersList() {
+            const listContainer = document.getElementById('teamMembersList');
+            listContainer.innerHTML = '';
+
+            Object.keys(teamMembers).forEach(dept => {
+                if (teamMembers[dept].length > 0) {
+                    const deptHeader = document.createElement('div');
+                    deptHeader.innerHTML = `<strong>${dept} Department:</strong>`;
+                    deptHeader.style.marginTop = '15px';
+                    deptHeader.style.marginBottom = '10px';
+                    deptHeader.style.color = '#2d3748';
+                    listContainer.appendChild(deptHeader);
+
+                    teamMembers[dept].forEach((member, index) => {
+                        const memberItem = document.createElement('div');
+                        memberItem.className = 'team-member-item';
+                        memberItem.innerHTML = `
+                            <div>
+                                <div style="font-weight: 600;">${member.name}</div>
+                                <div style="font-size: 12px; color: #718096;">${member.email}</div>
+                            </div>
+                            <button class="remove-btn" onclick="removeTeamMember('${dept}', ${index})">Remove</button>
+                        `;
+                        listContainer.appendChild(memberItem);
+                    });
+                }
+            });
+        }
+
+        // Update assignment dropdown
+        function updateAssignmentDropdown() {
+            const assignSelect = document.getElementById('assignTo');
+            assignSelect.innerHTML = '<option value="">Select Team Member</option>';
+
+            Object.keys(teamMembers).forEach(dept => {
+                if (teamMembers[dept].length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = dept + ' Department';
+                    
+                    teamMembers[dept].forEach(member => {
+                        const option = document.createElement('option');
+                        option.value = JSON.stringify({ name: member.name, email: member.email, department: dept });
+                        option.textContent = member.name;
+                        optgroup.appendChild(option);
+                    });
+                    
+                    assignSelect.appendChild(optgroup);
+                }
+            });
+        }
+
+        // Email validation
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Password strength checker
+        function checkPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.innerHTML = '';
+                return;
+            }
+            
+            let strength = 0;
+            let feedback = [];
+            
+            if (password.length >= 8) strength += 1;
+            else feedback.push('At least 8 characters');
+            
+            if (/[a-z]/.test(password)) strength += 1;
+            else feedback.push('lowercase letter');
+            
+            if (/[A-Z]/.test(password)) strength += 1;
+            else feedback.push('uppercase letter');
+            
+            if (/[0-9]/.test(password)) strength += 1;
+            else feedback.push('number');
+            
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            else feedback.push('special character');
+            
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (strength < 3) {
+                strengthText = 'Password Strength: Weak';
+                strengthClass = 'strength-weak';
+                if (feedback.length > 0) {
+                    strengthText += ` (Missing: ${feedback.join(', ')})`;
+                }
+            } else if (strength < 5) {
+                strengthText = 'Password Strength: Medium';
+                strengthClass = 'strength-medium';
+            } else {
+                strengthText = 'Password Strength: Strong';
+                strengthClass = 'strength-strong';
+            }
+            
+            strengthDiv.innerHTML = `<span class="${strengthClass}">${strengthText}</span>`;
+        }
+
+        // Admin password strength checker
+        function checkAdminPasswordStrength() {
+            const password = document.getElementById('adminPass').value;
+            const strengthDiv = document.getElementById('adminPasswordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.innerHTML = '';
+                return;
+            }
+            
+            let strength = 0;
+            let feedback = [];
+            
+            if (password.length >= 8) strength += 1;
+            else feedback.push('At least 8 characters');
+            
+            if (/[a-z]/.test(password)) strength += 1;
+            else feedback.push('lowercase letter');
+            
+            if (/[A-Z]/.test(password)) strength += 1;
+            else feedback.push('uppercase letter');
+            
+            if (/[0-9]/.test(password)) strength += 1;
+            else feedback.push('number');
+            
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            else feedback.push('special character');
+            
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (strength < 3) {
+                strengthText = 'Password Strength: Weak';
+                strengthClass = 'strength-weak';
+                if (feedback.length > 0) {
+                    strengthText += ` (Missing: ${feedback.join(', ')})`;
+                }
+            } else if (strength < 5) {
+                strengthText = 'Password Strength: Medium';
+                strengthClass = 'strength-medium';
+            } else {
+                strengthText = 'Password Strength: Strong';
+                strengthClass = 'strength-strong';
+            }
+            
+            strengthDiv.innerHTML = `<span class="${strengthClass}">${strengthText}</span>`;
+        }
+
+        // Change password function
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill in all password fields');
+                return;
+            }
+
+            if (currentUser.password !== currentPassword) {
+                alert('Current password is incorrect');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                alert('New password must be at least 8 characters long');
+                return;
+            }
+
+            // Update password
+            systemAdmins[currentUser.username].password = newPassword;
+            currentUser.password = newPassword;
+            saveSystemAdmins();
+
+            // Clear form
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('passwordStrength').innerHTML = '';
+
+            alert('Password changed successfully!');
+        }
+
+        // Add department admin
+        function addDepartmentAdmin() {
+            const department = document.getElementById('adminDepartment').value;
+            const username = document.getElementById('adminUsername').value;
+            const name = document.getElementById('adminName').value;
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPass').value;
+
+            if (!department || !username || !name || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
+
+            // Check if username already exists
+            if (systemAdmins[username]) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+
+            // Add new admin
+            systemAdmins[username] = {
+                username: username,
+                password: password,
+                name: name,
+                email: email,
+                department: department,
+                role: department + ' Admin',
+                canManageUsers: false,
+                createdDate: new Date().toISOString(),
+                createdBy: currentUser.username
+            };
+
+            saveSystemAdmins();
+
+            // Clear form
+            document.getElementById('adminDepartment').value = '';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminName').value = '';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminPasswordStrength').innerHTML = '';
+
+            updateAdminsList();
+            alert(`Department admin ${name} added successfully!`);
+        }
+
+        // Update admins list
+        function updateAdminsList() {
+            const listContainer = document.getElementById('adminsList');
+            listContainer.innerHTML = '';
+
+            Object.values(systemAdmins).forEach(admin => {
+                const adminItem = document.createElement('div');
+                adminItem.className = 'user-item';
+                
+                const roleClass = admin.canManageUsers ? 'super-admin-badge' : 'admin-badge';
+                const deleteButton = admin.canManageUsers ? '' : 
+                    `<button class="remove-btn" onclick="removeAdmin('${admin.username}')">Remove</button>`;
+
+                adminItem.innerHTML = `
+                    <div class="user-info-item">
+                        <h4>${admin.name}</h4>
+                        <p>${admin.email}</p>
+                        <p>Department: ${admin.department}</p>
+                        <p>Created: ${new Date(admin.createdDate).toLocaleDateString()}</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="role-badge ${roleClass}">${admin.role}</span>
+                        ${deleteButton}
+                    </div>
+                `;
+                
+                listContainer.appendChild(adminItem);
+            });
+        }
+
+        // Remove admin
+        function removeAdmin(username) {
+            if (confirm('Are you sure you want to remove this administrator?')) {
+                delete systemAdmins[username];
+                saveSystemAdmins();
+                updateAdminsList();
+                alert('Administrator removed successfully!');
+            }
+        }
+
+        // Toggle user management section
+        function toggleUserManagement() {
+            const section = document.getElementById('userManagementSection');
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+                document.getElementById('userManagementBtn').textContent = 'Hide User Management';
+                updateAdminsList();
+            } else {
+                section.style.display = 'none';
+                document.getElementById('userManagementBtn').textContent = 'User Management';
+            }
+        }
+
+        // Update Kanban board
+        function updateKanbanBoard() {
+            const columns = {
+                'New': document.getElementById('newColumn'),
+                'Assigned': document.getElementById('assignedColumn'),
+                'In Progress': document.getElementById('progressColumn'),
+                'Resolved': document.getElementById('resolvedColumn')
+            };
+
+            Object.values(columns).forEach(column => column.innerHTML = '');
+
+            tickets.forEach(ticket => {
+                const ticketCard = createTicketCard(ticket);
+                columns[ticket.status].appendChild(ticketCard);
+            });
+        }
+
+        // Create ticket card element
+        function createTicketCard(ticket) {
+            const card = document.createElement('div');
+            card.className = 'ticket-card';
+            card.onclick = () => showTicketDetails(ticket);
+
+            const priorityClass = `priority-${ticket.priority.toLowerCase()}`;
+            
+            card.innerHTML = `
+                <div class="ticket-id">${ticket.id}</div>
+                <div class="ticket-title">${ticket.title}</div>
+                <div class="ticket-meta">
+                    <span>${ticket.department}</span>
+                    <span>${new Date(ticket.createdDate).toLocaleDateString()}</span>
+                </div>
+                <div class="ticket-meta">
+                    <span>By: ${ticket.raisedBy}</span>
+                    <span class="ticket-priority ${priorityClass}">${ticket.severity || ticket.priority}</span>
+                </div>
+                ${ticket.assignedTo ? `<div style="font-size: 11px; color: #4a5568; margin-top: 5px;">Assigned to: ${ticket.assignedTo}</div>` : ''}
+            `;
+
+            return card;
+        }
+
+        // Show ticket details and options
+        function showTicketDetails(ticket) {
+            const actions = [];
+            
+            if (ticket.status === 'New') {
+                actions.push(`<button onclick="showAssignModal('${ticket.id}')" style="margin: 5px; padding: 5px 10px; background: #ed8936; color: white; border: none; border-radius: 4px; cursor: pointer;">Assign Ticket</button>`);
+            }
+            if (ticket.status === 'Assigned') {
+                actions.push(`<button onclick="updateTicketStatus('${ticket.id}', 'In Progress')" style="margin: 5px; padding: 5px 10px; background: #38b2ac; color: white; border: none; border-radius: 4px; cursor: pointer;">Start Progress</button>`);
+            }
+            if (ticket.status === 'In Progress') {
+                actions.push(`<button onclick="updateTicketStatus('${ticket.id}', 'Resolved')" style="margin: 5px; padding: 5px 10px; background: #48bb78; color: white; border: none; border-radius: 4px; cursor: pointer;">Mark Resolved</button>`);
+            }
+
+            const actionButtons = actions.length > 0 ? `<div style="margin-top: 15px;">${actions.join('')}</div>` : '';
+
+            const details = `
+                <div style="max-width: 500px;">
+                    <h3>Ticket Details - ${ticket.id}</h3>
+                    <p><strong>Title:</strong> ${ticket.title}</p>
+                    <p><strong>Raised By:</strong> ${ticket.raisedBy}</p>
+                    <p><strong>Employee Code:</strong> ${ticket.employeeCode || 'N/A'}</p>
+                    <p><strong>Department:</strong> ${ticket.department}</p>
+                    <p><strong>Severity:</strong> <span class="ticket-priority priority-${(ticket.severity || ticket.priority).toLowerCase()}">${ticket.severity || ticket.priority}</span></p>
+                    <p><strong>Status:</strong> ${ticket.status}</p>
+                    <p><strong>Description:</strong> ${ticket.description}</p>
+                    <p><strong>Created:</strong> ${new Date(ticket.createdDate).toLocaleString()}</p>
+                    ${ticket.assignedTo ? `<p><strong>Assigned To:</strong> ${ticket.assignedTo} (${ticket.assignedEmail})</p>` : ''}
+                    ${actionButtons}
+                </div>
+            `;
+
+            showCustomModal('Ticket Details', details);
+        }
+
+        // Show custom modal
+        function showCustomModal(title, content) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${title}</h3>
+                        <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                    </div>
+                    <div>${content}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+
+        // Show assignment modal
+        function showAssignModal(ticketId) {
+            currentTicketId = ticketId;
+            updateAssignmentDropdown();
+            
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket) {
+                document.getElementById('severityLevel').value = ticket.severity || ticket.priority;
+            }
+            
+            document.getElementById('assignModal').style.display = 'block';
+        }
+
+        // Assign ticket
+        function assignTicket() {
+            const assignToData = document.getElementById('assignTo').value;
+            const severity = document.getElementById('severityLevel').value;
+            const notes = document.getElementById('assignmentNotes').value;
+
+            if (!assignToData) {
+                alert('Please select a team member to assign the ticket to.');
+                return;
+            }
+
+            const memberData = JSON.parse(assignToData);
+            const ticket = tickets.find(t => t.id === currentTicketId);
+            
+            if (ticket) {
+                ticket.assignedTo = memberData.name;
+                ticket.assignedEmail = memberData.email;
+                ticket.assignedDepartment = memberData.department;
+                ticket.status = 'Assigned';
+                ticket.severity = severity;
+                ticket.lastModified = new Date().toISOString();
+                ticket.assignmentNotes = notes;
+
+                sendEmailNotification(ticket, memberData);
+
+                updateKanbanBoard();
+                updateStats();
+                saveTicketsToStorage();
+                
+                closeModal('assignModal');
+                alert(`Ticket ${currentTicketId} has been assigned to ${memberData.name} with ${severity} severity. Email notification sent.`);
+            }
+        }
+
+        // Send email notification (simulated)
+        function sendEmailNotification(ticket, assignee) {
+            console.log('Email sent to:', assignee.email);
+            console.log('Subject: New Ticket Assignment - ' + ticket.id);
+            console.log('Body:', `
+                Dear ${assignee.name},
+                
+                You have been assigned a new ticket:
+                
+                Ticket ID: ${ticket.id}
+                Title: ${ticket.title}
+                Raised By: ${ticket.raisedBy}
+                Department: ${ticket.department}
+                Severity: ${ticket.severity}
+                Description: ${ticket.description}
+                
+                Please log into the system to view and work on this ticket.
+                
+                Best regards,
+                Graviti Pharmaceuticals IT Team
+            `);
+            
+            showNotification(`Email sent to ${assignee.name} (${assignee.email})`);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Update ticket status
+        function updateTicketStatus(ticketId, newStatus) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket) {
+                ticket.status = newStatus;
+                ticket.lastModified = new Date().toISOString();
+
+                updateKanbanBoard();
+                updateStats();
+                saveTicketsToStorage();
+                
+                document.querySelectorAll('.modal').forEach(modal => modal.remove());
+                
+                alert(`Ticket ${ticketId} status updated to ${newStatus}`);
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const stats = {
+                total: tickets.length,
+                new: tickets.filter(t => t.status === 'New').length,
+                inProgress: tickets.filter(t => t.status === 'In Progress' || t.status === 'Assigned').length,
+                resolved: tickets.filter(t => t.status === 'Resolved').length
+            };
+
+            document.getElementById('totalTickets').textContent = stats.total;
+            document.getElementById('newTickets').textContent = stats.new;
+            document.getElementById('inProgressTickets').textContent = stats.inProgress;
+            document.getElementById('resolvedTickets').textContent = stats.resolved;
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            
+            if (modalId === 'assignModal') {
+                document.getElementById('assignTo').value = '';
+                document.getElementById('severityLevel').value = 'Medium';
+                document.getElementById('assignmentNotes').value = '';
+            }
+        }
+
+        // Export to PDF
+        function exportToPDF() {
+            const data = tickets.map(ticket => ({
+                'Ticket ID': ticket.id,
+                'Title': ticket.title,
+                'Raised By': ticket.raisedBy,
+                'Employee Code': ticket.employeeCode || 'N/A',
+                'Department': ticket.department,
+                'Severity': ticket.severity || ticket.priority,
+                'Status': ticket.status,
+                'Assigned To': ticket.assignedTo || 'Unassigned',
+                'Created Date': new Date(ticket.createdDate).toLocaleDateString(),
+                'Description': ticket.description
+            }));
+
+            let html = `
+                <html>
+                <head>
+                    <title>Graviti Pharmaceuticals - Ticket Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #667eea; color: white; }
+                        .priority-high, .priority-critical { background-color: #fed7d7; }
+                        .priority-medium { background-color: #feebc8; }
+                        .priority-low { background-color: #c6f6d5; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Graviti Pharmaceuticals</h1>
+                        <h2>Ticketing System Report</h2>
+                        <p>Generated on: ${new Date().toLocaleString()}</p>
+                        <p>Generated by: ${currentUser.name}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Title</th>
+                                <th>Raised By</th>
+                                <th>Employee Code</th>
+                                <th>Department</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Created Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            tickets.forEach(ticket => {
+                const severityClass = `priority-${(ticket.severity || ticket.priority).toLowerCase()}`;
+                html += `
+                    <tr class="${severityClass}">
+                        <td>${ticket.id}</td>
+                        <td>${ticket.title}</td>
+                        <td>${ticket.raisedBy}</td>
+                        <td>${ticket.employeeCode || 'N/A'}</td>
+                        <td>${ticket.department}</td>
+                        <td>${ticket.severity || ticket.priority}</td>
+                        <td>${ticket.status}</td>
+                        <td>${ticket.assignedTo || 'Unassigned'}</td>
+                        <td>${new Date(ticket.createdDate).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(html);
+            newWindow.document.close();
+            newWindow.print();
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const headers = ['Ticket ID', 'Title', 'Raised By', 'Employee Code', 'Department', 'Severity', 'Status', 'Assigned To', 'Assigned Email', 'Created Date', 'Last Modified', 'Description'];
+            
+            let csvContent = headers.join(',') + '\n';
+            
+            tickets.forEach(ticket => {
+                const row = [
+                    ticket.id,
+                    `"${ticket.title}"`,
+                    `"${ticket.raisedBy}"`,
+                    `"${ticket.employeeCode || 'N/A'}"`,
+                    ticket.department,
+                    ticket.severity || ticket.priority,
+                    ticket.status,
+                    `"${ticket.assignedTo || 'Unassigned'}"`,
+                    `"${ticket.assignedEmail || 'N/A'}"`,
+                    new Date(ticket.createdDate).toLocaleDateString(),
+                    new Date(ticket.lastModified).toLocaleDateString(),
+                    `"${ticket.description}"`
+                ];
+                csvContent += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `graviti_tickets_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show audit log
+        function showAuditLog() {
+            const auditData = generateAuditLog();
+            let auditHtml = `
+                <div style="max-width: 600px; max-height: 400px; overflow-y: auto;">
+                    <h3>System Audit Log</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background: #f7fafc;">
+                                <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: left;">Timestamp</th>
+                                <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: left;">Action</th>
+                                <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: left;">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            auditData.forEach(log => {
+                auditHtml += `
+                    <tr>
+                        <td style="border: 1px solid #e2e8f0; padding: 8px; font-size: 12px;">${new Date(log.timestamp).toLocaleString()}</td>
+                        <td style="border: 1px solid #e2e8f0; padding: 8px; font-size: 12px;">${log.action}</td>
+                        <td style="border: 1px solid #e2e8f0; padding: 8px; font-size: 12px;">${log.description}</td>
+                    </tr>
+                `;
+            });
+
+            auditHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            showCustomModal('Audit Log', auditHtml);
+        }
+
+        // Generate audit log from tickets
+        function generateAuditLog() {
+            const auditLog = [];
+            
+            tickets.forEach(ticket => {
+                auditLog.push({
+                    timestamp: ticket.createdDate,
+                    action: 'Ticket Created',
+                    description: `Ticket ${ticket.id} created by ${ticket.raisedBy}`
+                });
+                
+                if (ticket.assignedTo) {
+                    auditLog.push({
+                        timestamp: ticket.lastModified,
+                        action: 'Ticket Assigned',
+                        description: `Ticket ${ticket.id} assigned to ${ticket.assignedTo}`
+                    });
+                }
+                
+                if (ticket.status !== 'New') {
+                    auditLog.push({
+                        timestamp: ticket.lastModified,
+                        action: 'Status Update',
+                        description: `Ticket ${ticket.id} status changed to ${ticket.status}`
+                    });
+                }
+            });
+            
+            return auditLog.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        }
+
+        // Window click event to close modals
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+            
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    adminLogin();
+                }
+            });
+            
+            document.getElementById('issueDescription').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    submitUserTicket();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
