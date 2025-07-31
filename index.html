@@ -416,19 +416,6 @@
             display: none;
         }
 
-        .compliance-badge {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(72, 187, 120, 0.9);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 25px;
-            font-size: 12px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-        }
-
         .user-form {
             max-width: 600px;
             margin: 100px auto;
@@ -558,6 +545,24 @@
         .strength-medium { color: #ed8936; }
         .strength-strong { color: #48bb78; }
 
+        .status-check-form {
+            max-width: 600px;
+            margin: 50px auto 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -597,11 +602,6 @@
             <select id="userDepartment" required>
                 <option value="">Select Department</option>
                 <option value="IT">IT Department</option>
-                <option value="Admin">Admin Department</option>
-                <option value="Civil">Civil Department</option>
-                <option value="QA">Quality Assurance</option>
-                <option value="Production">Production</option>
-                <option value="Research">Research & Development</option>
             </select>
         </div>
         <div class="form-group">
@@ -619,7 +619,31 @@
         <button class="submit-btn" onclick="submitUserTicket()">Submit Ticket</button>
         
         <div class="admin-link">
-            <a href="#" onclick="showAdminLogin()">Admin Login</a>
+            <a href="#" onclick="showAdminLogin()">Admin Login</a> | 
+            <a href="#" onclick="showTicketStatus()">Check Ticket Status</a>
+        </div>
+    </div>
+
+    <!-- Ticket Status Check Form -->
+    <div id="ticketStatusForm" class="status-check-form hidden">
+        <div class="login-header">
+            <h2>Check Ticket Status</h2>
+            <p>Enter your ticket details to check status</p>
+        </div>
+        <div class="form-group">
+            <label for="statusTicketId">Ticket ID:</label>
+            <input type="text" id="statusTicketId" placeholder="Enter your ticket ID (e.g., GRP-001)" required>
+        </div>
+        <div class="form-group">
+            <label for="statusEmployeeCode">Employee Code:</label>
+            <input type="text" id="statusEmployeeCode" placeholder="Enter your employee code" required>
+        </div>
+        <button class="submit-btn" onclick="checkTicketStatus()">Check Status</button>
+        
+        <div id="statusResult" class="status-result"></div>
+        
+        <div class="admin-link">
+            <a href="#" onclick="showUserForm()">Back to Submit Ticket</a>
         </div>
     </div>
 
@@ -696,11 +720,6 @@
                         <select id="teamDepartment">
                             <option value="">Select Department</option>
                             <option value="IT">IT Department</option>
-                            <option value="Admin">Admin Department</option>
-                            <option value="Civil">Civil Department</option>
-                            <option value="QA">Quality Assurance</option>
-                            <option value="Production">Production</option>
-                            <option value="Research">Research & Development</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -770,16 +789,12 @@
                         <label for="adminDepartment">Department:</label>
                         <select id="adminDepartment">
                             <option value="">Select Department</option>
-                            <option value="Admin">Admin Department</option>
-                            <option value="Civil">Civil Department</option>
-                            <option value="QA">Quality Assurance</option>
-                            <option value="Production">Production</option>
-                            <option value="Research">Research & Development</option>
+                            <option value="IT">IT Department</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="adminUsername">Admin Username:</label>
-                        <input type="text" id="adminUsername" placeholder="Enter admin username">
+                        <label for="adminUsernameNew">Admin Username:</label>
+                        <input type="text" id="adminUsernameNew" placeholder="Enter admin username">
                     </div>
                     <div class="form-group">
                         <label for="adminName">Admin Full Name:</label>
@@ -836,7 +851,6 @@
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
                     <option value="High">High</option>
-                    <option value="Critical">Critical</option>
                 </select>
             </div>
             <div class="form-group">
@@ -847,21 +861,34 @@
         </div>
     </div>
 
-    <!-- Compliance Badge -->
-    <div class="compliance-badge">
-        FDA 21CFR Part 11 Compliant
+    <!-- Severity Change Modal -->
+    <div id="severityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Ticket Severity</h3>
+                <span class="close" onclick="closeModal('severityModal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="changeSeverity">New Severity:</label>
+                <select id="changeSeverity">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="severityReason">Reason for Change:</label>
+                <textarea id="severityReason" placeholder="Explain why severity is being changed..."></textarea>
+            </div>
+            <button class="submit-btn" onclick="changeSeverity()">Change Severity</button>
+        </div>
     </div>
 
     <script>
         // Global variables
         let tickets = [];
         let teamMembers = {
-            'IT': [],
-            'Admin': [],
-            'Civil': [],
-            'QA': [],
-            'Production': [],
-            'Research': []
+            'IT': []
         };
         let currentTicketId = null;
         let ticketCounter = 0;
@@ -890,6 +917,21 @@
             } else {
                 saveSystemAdmins();
             }
+
+            // Load stored team members
+            const storedTeamMembers = localStorage.getItem('gravitiTeamMembers');
+            if (storedTeamMembers) {
+                teamMembers = JSON.parse(storedTeamMembers);
+            } else {
+                // Initialize with some dummy team members
+                teamMembers = {
+                    'IT': [
+                        { name: 'John Smith', email: 'john.smith@graviti.com' },
+                        { name: 'Sarah Johnson', email: 'sarah.johnson@graviti.com' }
+                    ]
+                };
+                saveTeamMembers();
+            }
         }
 
         // Save system admins
@@ -897,37 +939,15 @@
             localStorage.setItem('gravitiSystemAdmins', JSON.stringify(systemAdmins));
         }
 
-        // Initialize with some dummy team members
-        function initializeTeamMembers() {
-            teamMembers = {
-                'IT': [
-                    { name: 'John Smith', email: 'john.smith@graviti.com' },
-                    { name: 'Sarah Johnson', email: 'sarah.johnson@graviti.com' }
-                ],
-                'Admin': [
-                    { name: 'Mike Wilson', email: 'mike.wilson@graviti.com' },
-                    { name: 'Lisa Brown', email: 'lisa.brown@graviti.com' }
-                ],
-                'Civil': [
-                    { name: 'David Lee', email: 'david.lee@graviti.com' },
-                    { name: 'Emma Davis', email: 'emma.davis@graviti.com' }
-                ],
-                'QA': [
-                    { name: 'Robert Chen', email: 'robert.chen@graviti.com' }
-                ],
-                'Production': [
-                    { name: 'Maria Garcia', email: 'maria.garcia@graviti.com' }
-                ],
-                'Research': [
-                    { name: 'James Miller', email: 'james.miller@graviti.com' }
-                ]
-            };
-            updateTeamMembersList();
+        // Save team members
+        function saveTeamMembers() {
+            localStorage.setItem('gravitiTeamMembers', JSON.stringify(teamMembers));
         }
 
         // Show admin login
         function showAdminLogin() {
             document.getElementById('userForm').classList.add('hidden');
+            document.getElementById('ticketStatusForm').classList.add('hidden');
             document.getElementById('adminLoginForm').classList.remove('hidden');
         }
 
@@ -935,7 +955,59 @@
         function showUserForm() {
             document.getElementById('adminLoginForm').classList.add('hidden');
             document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('ticketStatusForm').classList.add('hidden');
             document.getElementById('userForm').classList.remove('hidden');
+        }
+
+        // Show ticket status form
+        function showTicketStatus() {
+            document.getElementById('userForm').classList.add('hidden');
+            document.getElementById('adminLoginForm').classList.add('hidden');
+            document.getElementById('ticketStatusForm').classList.remove('hidden');
+        }
+
+        // Check ticket status
+        function checkTicketStatus() {
+            const ticketId = document.getElementById('statusTicketId').value.trim();
+            const employeeCode = document.getElementById('statusEmployeeCode').value.trim();
+
+            if (!ticketId || !employeeCode) {
+                alert('Please enter both Ticket ID and Employee Code');
+                return;
+            }
+
+            const storedTickets = JSON.parse(localStorage.getItem('gravitiTickets') || '[]');
+            const ticket = storedTickets.find(t => 
+                t.id.toLowerCase() === ticketId.toLowerCase() && 
+                t.employeeCode === employeeCode
+            );
+
+            const resultDiv = document.getElementById('statusResult');
+            
+            if (ticket) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">Ticket Found!</h4>
+                    <p><strong>Ticket ID:</strong> ${ticket.id}</p>
+                    <p><strong>Title:</strong> ${ticket.title}</p>
+                    <p><strong>Current Status:</strong> <span class="ticket-priority priority-${ticket.status.toLowerCase().replace(' ', '-')}" style="padding: 4px 8px; border-radius: 4px; color: white; font-size: 12px;">
+                        ${ticket.status}
+                    </span></p>
+                    <p><strong>Severity:</strong> <span class="ticket-priority priority-${(ticket.severity || ticket.priority).toLowerCase()}">${ticket.severity || ticket.priority}</span></p>
+                    <p><strong>Created:</strong> ${new Date(ticket.createdDate).toLocaleString()}</p>
+                    <p><strong>Last Updated:</strong> ${new Date(ticket.lastModified).toLocaleString()}</p>
+                    ${ticket.assignedTo ? `<p><strong>Assigned To:</strong> ${ticket.assignedTo}</p>` : '<p><strong>Assignment:</strong> Not yet assigned</p>'}
+                `;
+            } else {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <h4 style="color: #f56565; margin-bottom: 10px;">Ticket Not Found</h4>
+                    <p>No ticket found with the provided details. Please check your Ticket ID and Employee Code.</p>
+                `;
+            }
+
+            document.getElementById('statusTicketId').value = '';
+            document.getElementById('statusEmployeeCode').value = '';
         }
 
         // Submit user ticket
@@ -960,10 +1032,10 @@
                 department: department,
                 description: description,
                 priority: 'Medium',
+                severity: 'Medium',
                 status: 'New',
                 assignedTo: '',
                 assignedEmail: '',
-                severity: 'Medium',
                 createdDate: new Date().toISOString(),
                 lastModified: new Date().toISOString()
             };
@@ -977,7 +1049,7 @@
             document.getElementById('employeeCode').value = '';
             document.getElementById('issueDescription').value = '';
 
-            alert(`Ticket submitted successfully!\nTicket ID: ${ticketId}\n\nYour ticket has been received and will be reviewed by our team shortly.`);
+            alert(`Ticket submitted successfully!\nTicket ID: ${ticketId}\n\nYour ticket has been received and will be reviewed by our team shortly.\n\nYou can check your ticket status using the "Check Ticket Status" option.`);
         }
 
         // Admin login with enhanced authentication
@@ -1011,7 +1083,7 @@
                 }
                 
                 loadTicketsFromStorage();
-                initializeTeamMembers();
+                updateTeamMembersList();
                 updateKanbanBoard();
                 updateStats();
                 
@@ -1058,7 +1130,7 @@
             }
         }
 
-        // Add team member
+        // Add team member with email notification
         function addTeamMember() {
             const department = document.getElementById('teamDepartment').value;
             const name = document.getElementById('memberName').value;
@@ -1084,6 +1156,7 @@
             }
 
             teamMembers[department].push({ name, email });
+            saveTeamMembers(); // Save to localStorage
             
             document.getElementById('teamDepartment').value = '';
             document.getElementById('memberName').value = '';
@@ -1092,16 +1165,50 @@
             updateTeamMembersList();
             updateAssignmentDropdown();
             
-            alert(`Team member ${name} added successfully to ${department} department!`);
+            // Send email notification
+            sendTeamMemberAddedNotification(name, email, department);
+            
+            alert(`Team member ${name} added successfully to ${department} department!\nEmail notification sent to ${email}.`);
         }
 
-        // Remove team member
+        // Remove team member permanently
         function removeTeamMember(department, index) {
-            if (confirm('Are you sure you want to remove this team member?')) {
+            const member = teamMembers[department][index];
+            if (confirm(`Are you sure you want to permanently remove ${member.name} from the team?`)) {
                 teamMembers[department].splice(index, 1);
+                saveTeamMembers(); // Save to localStorage
                 updateTeamMembersList();
                 updateAssignmentDropdown();
+                alert(`${member.name} has been permanently removed from the team.`);
             }
+        }
+
+        // Send team member added notification
+        function sendTeamMemberAddedNotification(name, email, department) {
+            console.log('Team Member Addition Email sent to:', email);
+            console.log('Subject: Welcome to Graviti Pharmaceuticals IT Team');
+            console.log('Body:', `
+                Dear ${name},
+                
+                Welcome to the Graviti Pharmaceuticals ${department} Department team!
+                
+                You have been added to our ticketing system and will now receive notifications
+                for ticket assignments and updates.
+                
+                Your account details:
+                - Name: ${name}
+                - Email: ${email}
+                - Department: ${department}
+                - Added by: ${currentUser.name}
+                - Date: ${new Date().toLocaleString()}
+                
+                Please contact your administrator if you have any questions.
+                
+                Best regards,
+                Graviti Pharmaceuticals IT Team
+            `);
+            
+            showNotification(`Welcome email sent to ${name} (${email})`);
         }
 
         // Update team members list display
@@ -1301,7 +1408,7 @@
         // Add department admin
         function addDepartmentAdmin() {
             const department = document.getElementById('adminDepartment').value;
-            const username = document.getElementById('adminUsername').value;
+            const username = document.getElementById('adminUsernameNew').value;
             const name = document.getElementById('adminName').value;
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPass').value;
@@ -1344,7 +1451,7 @@
 
             // Clear form
             document.getElementById('adminDepartment').value = '';
-            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminUsernameNew').value = '';
             document.getElementById('adminName').value = '';
             document.getElementById('adminEmail').value = '';
             document.getElementById('adminPass').value = '';
@@ -1463,6 +1570,11 @@
                 actions.push(`<button onclick="updateTicketStatus('${ticket.id}', 'Resolved')" style="margin: 5px; padding: 5px 10px; background: #48bb78; color: white; border: none; border-radius: 4px; cursor: pointer;">Mark Resolved</button>`);
             }
 
+            // Add severity change button for super admin
+            if (currentUser && currentUser.canManageUsers) {
+                actions.push(`<button onclick="showSeverityModal('${ticket.id}')" style="margin: 5px; padding: 5px 10px; background: #9f7aea; color: white; border: none; border-radius: 4px; cursor: pointer;">Change Severity</button>`);
+            }
+
             const actionButtons = actions.length > 0 ? `<div style="margin-top: 15px;">${actions.join('')}</div>` : '';
 
             const details = `
@@ -1520,6 +1632,46 @@
             }
             
             document.getElementById('assignModal').style.display = 'block';
+        }
+
+        // Show severity change modal
+        function showSeverityModal(ticketId) {
+            currentTicketId = ticketId;
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket) {
+                document.getElementById('changeSeverity').value = ticket.severity || ticket.priority;
+            }
+            document.getElementById('severityModal').style.display = 'block';
+        }
+
+        // Change ticket severity
+        function changeSeverity() {
+            const newSeverity = document.getElementById('changeSeverity').value;
+            const reason = document.getElementById('severityReason').value;
+
+            if (!reason.trim()) {
+                alert('Please provide a reason for changing the severity');
+                return;
+            }
+
+            const ticket = tickets.find(t => t.id === currentTicketId);
+            if (ticket) {
+                const oldSeverity = ticket.severity || ticket.priority;
+                ticket.severity = newSeverity;
+                ticket.priority = newSeverity;
+                ticket.lastModified = new Date().toISOString();
+                ticket.severityChangeReason = reason;
+                ticket.severityChangedBy = currentUser.name;
+
+                updateKanbanBoard();
+                updateStats();
+                saveTicketsToStorage();
+                
+                closeModal('severityModal');
+                document.querySelectorAll('.modal').forEach(modal => modal.remove());
+                
+                alert(`Ticket ${currentTicketId} severity changed from ${oldSeverity} to ${newSeverity}`);
+            }
         }
 
         // Assign ticket
@@ -1644,6 +1796,9 @@
                 document.getElementById('assignTo').value = '';
                 document.getElementById('severityLevel').value = 'Medium';
                 document.getElementById('assignmentNotes').value = '';
+            } else if (modalId === 'severityModal') {
+                document.getElementById('changeSeverity').value = 'Medium';
+                document.getElementById('severityReason').value = '';
             }
         }
 
